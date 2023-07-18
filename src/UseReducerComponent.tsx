@@ -1,8 +1,8 @@
 import { useState, useReducer } from "react";
-//import { styles } from "./styles.css"
+import "./App.css"
 
 const initialState = {
-  counter: 100
+  counter: 10
 };
 
 type ACTIONTYPES =
@@ -43,7 +43,7 @@ export default function UseReducerComponent() {
   const [incAmount, setIncAmount] = useState("2");
   return (
     <div>
-      <div>{state.counter}</div>
+      <h3>{state.counter}</h3>
       <div>
         <button
           onClick={() =>
