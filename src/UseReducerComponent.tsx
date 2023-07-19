@@ -3,7 +3,8 @@ import "./App.css"
 
 const initialState = {
   counter: 0,
-  numArr: [1, 2]
+  numArr: [1, 2],
+  wordArr: ["One", "Two"]
 };
 
 type ACTIONTYPES =
@@ -11,81 +12,80 @@ type ACTIONTYPES =
   | { type: "decrement"; payload: number }
   | { type: "addArray"; payload: number }
   | { type: "multArray"; payload: number }
+  | { type: "pushStrArray"; payload: string }
   | { type: "reset"; payload: null }
   | { type: "incAmount"; payload: number };
 
 function counterReducer(state: typeof initialState, action: ACTIONTYPES) {
   switch (action.type) {
     case "increment":
-      return {
-        ...state,
-        counter: state.counter + action.payload
-      };
+      return { ...state, counter: state.counter + action.payload };
     case "decrement":
-      return {
-        ...state,
-        counter: state.counter - action.payload
-      };
+      return { ...state, counter: state.counter - action.payload };
     case "multArray":
       let numArrTemp = [...state.numArr];
       numArrTemp.forEach((item, index, arr) => {
         arr[index] = item * action.payload;
       });
-      return {
-        ...state,
-        numArr: numArrTemp
-      };
+      return { ...state, numArr: numArrTemp };
     case "addArray":
       return {
         ...state,
         numArr: [...state.numArr, state.numArr.length + 1]
       };
+    case "pushStrArray":
+      return {
+        ...state,
+        wordArr: [...state.wordArr, action.payload]
+      };
     case "reset":
-      return {
-        ...state,
-        counter: 0
-      };
+      return { ...state, counter: 0 };
     case "incAmount":
-      return {
-        ...state,
-        counter: state.counter + action.payload
-      };
+      return { ...state, counter: state.counter + action.payload };
     default:
       throw new Error("Bad action");
   }
 }
 
-export default function UseReducerComponent() {
+function UseReducerComponent() {
   const [state, dispatch] = useReducer(counterReducer, initialState);
-  const [incAmount, setIncAmount] = useState("1");
+  const [incAmount, setIncAmount] = useState(1);
   const [arrMultAmt, setArrMultAmt] = useState(2);
-
+  const [inStr, setInStr] = useState("");
   return (
     <div>
-      <div>Counter: {state.counter}</div>
-      <div>Num Array: {JSON.stringify(state.numArr)}</div>
+      <h3>Counter: {state.counter}</h3>
+      <h3>Num Array: {JSON.stringify(state.numArr)}</h3>
+      <h3>String Array: {JSON.stringify(state.wordArr)}</h3>
       <div>
         <button
           onClick={() =>
             dispatch({
               type: "increment",
-              payload: Number(incAmount)
+              payload: incAmount
             })
           }
         >
-          Increment
+          Inc
         </button>
         |
         <button
           onClick={() =>
             dispatch({
               type: "decrement",
-              payload: Number(incAmount)
+              payload: incAmount
             })
           }
         >
-          Decrement
+          Dec
         </button>
+        |
+        <input
+          type="number"
+          className={"numberbox"}
+          value={incAmount}
+          onChange={(e) => setIncAmount(parseInt(e.target.value, 10))}
+        />
         |
         <button
           onClick={() =>
@@ -100,13 +100,7 @@ export default function UseReducerComponent() {
         |
         <input
           type="number"
-          className={"textbox"}
-          value={incAmount}
-          onChange={(e) => setIncAmount(e.target.value)}
-        />
-        <input
-          type="number"
-          className={"textbox"}
+          className={"numberbox"}
           value={arrMultAmt}
           onChange={(e) => setArrMultAmt(parseInt(e.target.value, 10))}
         />
@@ -128,9 +122,28 @@ export default function UseReducerComponent() {
             })
           }
         >
-          Add Array
+          Push Num
+        </button>
+        <input
+          type="string"
+          className={"textbox"}
+          value={inStr}
+          onChange={(e) => setInStr(e.target.value)}
+        />
+        <button
+          onClick={() => {
+            dispatch({
+              type: "pushStrArray",
+              payload: inStr
+            });
+            setInStr(""); // clear the input box
+          }}
+        >
+          Push Word
         </button>
       </div>
     </div>
   );
 }
+
+export default UseReducerComponent;
