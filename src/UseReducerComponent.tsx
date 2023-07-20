@@ -4,16 +4,27 @@ import "./App.css"
 const initialState = {
   counter: 0,
   numArr: [1, 2],
-  wordArr: ["One", "Two"]
+  wordArr: ["One", "Two"],
+  obj: {
+    objNum: 10,
+    objNumArr: [11, 22],
+    objWordArr: ["Five", "Six"]
+  }
 };
 
 type ACTIONTYPES =
   | { type: "increment"; payload: number }
   | { type: "decrement"; payload: number }
+  | { type: "objIncrement"; payload: number }
+  | { type: "objDecrement"; payload: number }
   | { type: "addArray"; payload: number }
+  | { type: "objAddArray"; payload: number }
   | { type: "multArray"; payload: number }
+  | { type: "objMultArray"; payload: number }
   | { type: "pushStrArray"; payload: string }
+  | { type: "objPushStrArray"; payload: string }
   | { type: "reset"; payload: null }
+  | { type: "objReset"; payload: number }
   | { type: "incAmount"; payload: number };
 
 function counterReducer(state: typeof initialState, action: ACTIONTYPES) {
@@ -22,24 +33,64 @@ function counterReducer(state: typeof initialState, action: ACTIONTYPES) {
       return { ...state, counter: state.counter + action.payload };
     case "decrement":
       return { ...state, counter: state.counter - action.payload };
+    case "objIncrement":
+      return {
+        ...state,
+        obj: { ...state.obj, objNum: state.obj.objNum + action.payload }
+      };
+    case "objDecrement":
+      return {
+        ...state,
+        obj: { ...state.obj, objNum: state.obj.objNum - action.payload }
+      };
     case "multArray":
       let numArrTemp = [...state.numArr];
       numArrTemp.forEach((item, index, arr) => {
         arr[index] = item * action.payload;
       });
       return { ...state, numArr: numArrTemp };
+    case "objMultArray":
+      let objNumArrTemp = [...state.obj.objNumArr];
+      objNumArrTemp.forEach((item, index, arr) => {
+        arr[index] = item * action.payload;
+      });
+      return {
+        ...state,
+        obj: { ...state.obj, objNumArr: objNumArrTemp }
+      };
     case "addArray":
       return {
         ...state,
         numArr: [...state.numArr, state.numArr.length + 1]
+      };
+    case "objAddArray":
+      return {
+        ...state,
+        obj: {
+          ...state.obj,
+          objNumArr: [...state.obj.objNumArr, state.obj.objNumArr.length + 1]
+        }
       };
     case "pushStrArray":
       return {
         ...state,
         wordArr: [...state.wordArr, action.payload]
       };
+    case "objPushStrArray":
+      return {
+        ...state,
+        obj: {
+          ...state.obj,
+          objWordArr: [...state.obj.objWordArr, action.payload]
+        }
+      };
     case "reset":
       return { ...state, counter: 0 };
+    case "objReset":
+      return {
+        ...state,
+        obj: { ...state.obj, objNum: action.payload }
+      };
     case "incAmount":
       return { ...state, counter: state.counter + action.payload };
     default:
@@ -56,7 +107,8 @@ function UseReducerComponent() {
     <div>
       <h3>Counter: {state.counter}</h3>
       <h3>Num Array: {JSON.stringify(state.numArr)}</h3>
-      <h3>String Array: {JSON.stringify(state.wordArr)}</h3>
+      <h3>Word Array: {JSON.stringify(state.wordArr)}</h3>
+      <h3>Object array: {JSON.stringify(state.obj)}</h3>
       <div>
         <button
           onClick={() =>
@@ -80,13 +132,6 @@ function UseReducerComponent() {
           Dec
         </button>
         |
-        <input
-          type="number"
-          className={"numberbox"}
-          value={incAmount}
-          onChange={(e) => setIncAmount(parseInt(e.target.value, 10))}
-        />
-        |
         <button
           onClick={() =>
             dispatch({
@@ -98,6 +143,44 @@ function UseReducerComponent() {
           Reset
         </button>
         |
+        <input
+          type="number"
+          className={"numberbox"}
+          value={incAmount}
+          onChange={(e) => setIncAmount(parseInt(e.target.value, 10))}
+        />
+        <button
+          onClick={() =>
+            dispatch({
+              type: "objIncrement",
+              payload: incAmount
+            })
+          }
+        >
+          Obj Inc
+        </button>
+        |
+        <button
+          onClick={() =>
+            dispatch({
+              type: "objDecrement",
+              payload: incAmount
+            })
+          }
+        >
+          Obj Dec
+        </button>
+        |
+        <button
+          onClick={() =>
+            dispatch({
+              type: "objReset",
+              payload: 10
+            })
+          }
+        >
+          Obj Reset
+        </button>
         <input
           type="number"
           className={"numberbox"}
@@ -117,12 +200,32 @@ function UseReducerComponent() {
         <button
           onClick={() =>
             dispatch({
+              type: "objMultArray",
+              payload: arrMultAmt
+            })
+          }
+        >
+          Mult Obj Array
+        </button>
+        <button
+          onClick={() =>
+            dispatch({
               type: "addArray",
               payload: 1
             })
           }
         >
           Push Num
+        </button>
+        <button
+          onClick={() =>
+            dispatch({
+              type: "objAddArray",
+              payload: 1
+            })
+          }
+        >
+          Push Obj Num
         </button>
         <input
           type="string"
@@ -141,9 +244,21 @@ function UseReducerComponent() {
         >
           Push Word
         </button>
+        <button
+          onClick={() => {
+            dispatch({
+              type: "objPushStrArray",
+              payload: inStr
+            });
+            setInStr(""); // clear the input box
+          }}
+        >
+          Push Obj Word
+        </button>
       </div>
     </div>
   );
 }
+
 
 export default UseReducerComponent;
