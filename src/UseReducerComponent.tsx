@@ -4,12 +4,22 @@ import "./App.css"
 const initialState = {
   counter: 0,
   numArr: [1, 2],
-  wordArr: ["One", "Two"],
+  wordArr: [
+    "javascript",
+    "react",
+    "JavaScript",
+    "code",
+    "React",
+    "javaScript",
+    "coDe"
+  ],
   obj: {
     objNum: 10,
     objNumArr: [11, 22],
-    objWordArr: ["Five", "Six"]
-  }
+    objWordArr: ["One", "Two", "one", "two", "three", "onE"]
+  },
+  wordCount: {},
+  objWordCount: {}
 };
 
 type ACTIONTYPES =
@@ -25,7 +35,9 @@ type ACTIONTYPES =
   | { type: "objPushStrArray"; payload: string }
   | { type: "reset"; payload: null }
   | { type: "objReset"; payload: number }
-  | { type: "incAmount"; payload: number };
+  | { type: "incAmount"; payload: number }
+  | { type: "wordCount"; payload: null }
+  | { type: "objWordCount"; payload: null };
 
 function counterReducer(state: typeof initialState, action: ACTIONTYPES) {
   switch (action.type) {
@@ -93,6 +105,29 @@ function counterReducer(state: typeof initialState, action: ACTIONTYPES) {
       };
     case "incAmount":
       return { ...state, counter: state.counter + action.payload };
+    case "wordCount":
+      const wordCount: any = {};
+      for (const element of state.wordArr) {
+        let element1 = element.toLowerCase();
+        if (wordCount[element1]) {
+          wordCount[element1] += 1;
+        } else {
+          wordCount[element1] = 1;
+        }
+      }
+      //console.log(wordCount);
+      return { ...state, wordCount };
+    case "objWordCount":
+      const objWordCount: any = {};
+      for (const element of state.obj.objWordArr) {
+        let element1 = element.toLowerCase();
+        if (objWordCount[element1]) {
+          objWordCount[element1] += 1;
+        } else {
+          objWordCount[element1] = 1;
+        }
+      }
+      return { ...state, objWordCount };
     default:
       throw new Error("Bad action");
   }
@@ -106,9 +141,8 @@ function UseReducerComponent() {
   return (
     <div>
       <h3>Counter: {state.counter}</h3>
-      <h3>Num Array: {JSON.stringify(state.numArr)}</h3>
-      <h3>Word Array: {JSON.stringify(state.wordArr)}</h3>
-      <h3>Object array: {JSON.stringify(state.obj)}</h3>
+      <h3>Number Array: {JSON.stringify(state.numArr)}</h3>
+      <h3>Object: {JSON.stringify(state.obj)}</h3>
       <div>
         <button
           onClick={() =>
@@ -130,7 +164,7 @@ function UseReducerComponent() {
           }
         >
           Dec
-        </button>
+        </button>{" "}
         |
         <button
           onClick={() =>
@@ -250,15 +284,38 @@ function UseReducerComponent() {
               type: "objPushStrArray",
               payload: inStr
             });
-            setInStr(""); // clear the input box
           }}
         >
           Push Obj Word
         </button>
+        <h3>Word Array: {JSON.stringify(initialState.wordArr)}</h3>
+        <button
+          onClick={() => {
+            dispatch({
+              type: "wordCount",
+              payload: null
+            });
+            setInStr(""); // clear the input box
+          }}
+        >
+          Word count
+        </button>
+        <h3>Word count: {JSON.stringify(state.wordCount)}</h3>
+        <button
+          onClick={() => {
+            dispatch({
+              type: "objWordCount",
+              payload: null
+            });
+            setInStr(""); // clear the input box
+          }}
+        >
+          Obj word count
+        </button>
+        <h3>Object word count: {JSON.stringify(state.objWordCount)}</h3>
       </div>
     </div>
   );
 }
-
 
 export default UseReducerComponent;
